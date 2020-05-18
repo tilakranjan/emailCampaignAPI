@@ -9,7 +9,6 @@ const ObjectId = require("mongodb").ObjectID;
 
 module.exports = {
     add: (sDates, cid, cb) => {
-
         for (let x of sDates) {
             let mObj = {}
             mObj.date = parseInt(x.date.split("/")[1]);
@@ -32,6 +31,33 @@ module.exports = {
                 });
         }
         cb(true);
+    },
+
+    getAgg: (q, cb) => {
+        schedules.aggregate([
+            { $match: q },
+
+            {
+                $addFields: {
+                    coid: { $toObjectId: "$campaignId" }
+                }
+            },
+
+            {
+                $lookup: {
+                    from: "campaigns",
+                    localField: "coid",
+                    foreignField: "_id",
+                    as: "campaign"
+                }
+            },
+
+            { $unwind: "$campaign" }
+
+        ])
+            .then(mongoRes => {
+                cb(mongoRes);
+            });
     },
 
 };

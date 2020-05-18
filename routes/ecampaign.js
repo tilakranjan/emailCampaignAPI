@@ -29,26 +29,21 @@ router.post("/check", (req, res, next) => {
             throw new Error(validation.error.details[0].message);
         }
 
-        helpers.resSuccess(res, {
-            campaignId: "8767675645365sdas232",
-            message: "Your campaign is in proress.",
-            data: {
-                "senderName": "Sam",
-                "senderEmail": "sam@sam.com",
-                "emailTo": [
-                    "sam1@sam.com",
-                    "sam1@sam.com"
-                ],
-                "emailSubject": "Welcome email.",
-                "emailBody": "Hello, we are glad to have you in our team.",
-                "emailSchedule": [
-                    {
-                        "date": "05/30/2021",
-                        "time": "19:00"
-                    }
-                ]
+        controllers.campaign.get(
+            postData,
+            ures => {
+                if (ures) {
+                    helpers.resSuccess(res, {
+                        campaignId: postData.campaignId,
+                        message: "Your campaign details are as follows.",
+                        data: ures
+                    });
+                }
+                else {
+                    helpers.resError(res, {message: "Invalid request."}, true, null);
+                }
             }
-        });
+        );
 
     } catch (e) {
         helpers.resError(res, e, true, null);

@@ -8,6 +8,7 @@ let express = require("express")
     , router = express.Router()
     , helpers = require("../lib/utils")
     , Joi = require("@hapi/joi")
+    , controllers = require("../controller/index")
     ;
 
 router.get("/", (req, res, next) => {
@@ -76,11 +77,22 @@ router.post("/add", (req, res, next) => {
             throw new Error(validation.error.details[0].message);
         }
 
-        helpers.resSuccess(res, {
-            campaignId: "8767675645365sdas232",
-            message: "Please note you campaign id for further queries.",
-            data: postData
-        });
+        postData.createdOn = new Date();
+        controllers.campaign.add(
+            postData,
+            ures => {
+                if (ures) {
+                    helpers.resSuccess(res, {
+                        campaignId: ures,
+                        message: "Please note you campaign id for further queries.",
+                        data: postData
+                    });
+                }
+                else {
+                    helpers.resError(res, {message: "Something went wronge."}, true, null);
+                }
+            }
+        );
 
     } catch (e) {
         helpers.resError(res, e, true, null);

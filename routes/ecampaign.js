@@ -36,7 +36,7 @@ router.post("/check", (req, res, next) => {
                     helpers.resSuccess(res, {
                         campaignId: postData.campaignId,
                         message: "Your campaign details are as follows.",
-                        data: ures
+                        data: ures[0]
                     });
                 }
                 else {

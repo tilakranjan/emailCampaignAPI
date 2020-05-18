@@ -5,7 +5,9 @@
  */
 
 const campaign = require("./campaign");
+const schedules = require("./schedules");
 
 module.exports = {
     campaign,
+    schedules,
 }

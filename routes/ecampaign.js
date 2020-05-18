@@ -77,6 +77,15 @@ router.post("/add", (req, res, next) => {
             postData,
             ures => {
                 if (ures) {
+                    // call to add schedules.
+                    controllers.schedules.add(
+                        postData.emailSchedule,
+                        ures,
+                        sres => {
+                            console.log(sres);
+                        }
+                    );
+                    
                     helpers.resSuccess(res, {
                         campaignId: ures,
                         message: "Please note you campaign id for further queries.",

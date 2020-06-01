@@ -9,6 +9,7 @@ let express = require("express")
     , helpers = require("../lib/utils")
     , Joi = require("@hapi/joi")
     , controllers = require("../controller/index")
+    , mailer = require("../lib/mailer")
     ;
 
 router.get("/", (req, res, next) => {
@@ -40,7 +41,7 @@ router.post("/check", (req, res, next) => {
                     });
                 }
                 else {
-                    helpers.resError(res, {message: "Invalid request."}, true, null);
+                    helpers.resError(res, { message: "Invalid request." }, true, null);
                 }
             }
         );
@@ -85,7 +86,7 @@ router.post("/add", (req, res, next) => {
                             console.log(sres);
                         }
                     );
-                    
+
                     helpers.resSuccess(res, {
                         campaignId: ures,
                         message: "Please note you campaign id for further queries.",
@@ -93,7 +94,7 @@ router.post("/add", (req, res, next) => {
                     });
                 }
                 else {
-                    helpers.resError(res, {message: "Something went wronge."}, true, null);
+                    helpers.resError(res, { message: "Something went wronge." }, true, null);
                 }
             }
         );
@@ -102,6 +103,38 @@ router.post("/add", (req, res, next) => {
         helpers.resError(res, e, true, null);
     }
 
+});
+
+router.get("/runCampaign", (req, res, next) => {
+    console.log('@Run Campaign...');
+
+    let d = new Date();
+    console.log(d.getFullYear() + "-" + (d.getMonth()+1) + "-" + d.getDate() + " -- " + d.getHours() + ":" + d.getMinutes() + ":" + d.getSeconds());
+
+    controllers.schedules.getAgg(
+        {
+            // date: 30
+            date: d.getDate(),
+            month: d.getMonth() + 1,
+            year: d.getFullYear(),
+            time: d.getHours() + ":" + d.getMinutes()
+        },
+        mres => {
+            console.log(mres);
+            if (mres.length > 0) {
+                for (let x of mres) {
+                    // call mailer
+                    mailer({
+                        from: x.campaign.senderName + " <" + x.campaign.senderEmail + ">",
+                        to: x.campaign.emailTo,
+                        sub: x.campaign.emailSubject,
+                        body: x.campaign.emailBody
+                    });
+                }
+            }
+
+        }
+    );
 });
 
 module.exports = function (app) {

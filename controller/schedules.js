@@ -14,7 +14,7 @@ module.exports = {
             mObj.date = parseInt(x.date.split("/")[1]);
             mObj.month = parseInt(x.date.split("/")[0]);
             mObj.year = parseInt(x.date.split("/")[2]);
-            mObj.time = x.time;
+            mObj.time = (parseInt(x.time.split(":")[0])).toString()+":"+(parseInt(x.time.split(":")[1])).toString();
             mObj.campaignId = cid;
 
             new schedules(mObj)
